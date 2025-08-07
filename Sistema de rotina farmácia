@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotina Compradora - Farmácia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #5FB3C4 0%, #4A9DB0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #5FB3C4 0%, #4A9DB0 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+            color: #5FB3C4;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #5FB3C4;
+            border-bottom-color: #5FB3C4;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .day-section, .monthly-section {
+            display: none;
+        }
+        
+        .day-section.active, .monthly-section.active {
+            display: block;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #5FB3C4;
+        }
+        
+        .section h3 {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h3::before {
+            content: "📊";
+            font-size: 1.2rem;
+        }
+        
+        .labs h3::before {
+            content: "🏥";
+        }
+        
+        .monthly h3::before {
+            content: "📅";
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist li {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f4;
+            transition: all 0.3s ease;
+        }
+        
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist li:hover {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding-left: 10px;
+        }
+        
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            transform: scale(1.2);
+            accent-color: #5FB3C4;
+        }
+        
+        .checklist label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .checklist input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #6c757d;
+            opacity: 0.7;
+        }
+        
+        .labs {
+            border-left-color: #D33F49;
+        }
+        
+        .daily-tasks {
+            border-left-color: #5FB3C4;
+        }
+        
+        .monthly {
+            border-left-color: #D33F49;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #5FB3C4, #4A9DB0);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #D33F49, #B8373F);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(211, 63, 73, 0.3);
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211, 63, 73, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Rotina</h1>
+            <p>Organização para Compradora - Farmácia</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('segunda')">Segunda</button>
+            <button class="tab" onclick="showTab('terca')">Terça</button>
+            <button class="tab" onclick="showTab('quarta')">Quarta</button>
+            <button class="tab" onclick="showTab('quinta')">Quinta</button>
+            <button class="tab" onclick="showTab('sexta')">Sexta</button>
+            <button class="tab" onclick="showTab('mensal')">Mensal</button>
+        </div>
+        
+        <div class="content">
+            <!-- Segunda-feira -->
+            <div id="segunda" class="day-section active">
+                <div class="section labs">
+                    <h3>Laboratórios - Segunda-feira</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="seg-germed"><label for="seg-germed">Germed</label></li>
+                        <li><input type="checkbox" id="seg-biossintetica"><label for="seg-biossintetica">Biossintetica</label></li>
+                        <li><input type="checkbox" id="seg-farmacia-popular"><label for="seg-farmacia-popular">Produtos Farmácia Popular</label></li>
+                    </ul>
+                </div>
+                <div class="section daily-tasks">
+                    <h3>Tarefas Diárias</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="seg-relatorio-maria"><label for="seg-relatorio-maria">Tirar relatório Maria Comércio Med</label></li>
+                        <li><input type="checkbox" id="seg-relatorio-nossa"><label for="seg-relatorio-nossa">Tirar relatório Nossa Senhora</label></li>
+                        <li><input type="checkbox" id="seg-demanda-15"><label for="seg-demanda-15">Conferir demanda de 15 dias</label></li>
+                        <li><input type="checkbox" id="seg-faltas-dia"><label for="seg-faltas-dia">Verificar faltas</label></li>
+                    </ul>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-segunda"></div></div>
+                <div class="progress-text" id="progress-text-segunda">0% concluído</div>
+                <button class="reset-btn" onclick="resetDay('segunda')">Resetar Dia</button>
+            </div>
+
+            <!-- Terça-feira -->
+            <div id="terca" class="day-section">
+                <div class="section labs">
+                    <h3>Laboratórios - Terça-feira</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="ter-ems"><label for="ter-ems">EMS</label></li>
+                        <li><input type="checkbox" id="ter-riomed"><label for="ter-riomed">Riomed</label></li>
+                    </ul>
+                </div>
+                <div class="section daily-tasks">
+                    <h3>Tarefas Diárias</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="ter-relatorio-maria"><label for="ter-relatorio-maria">Tirar relatório Maria Comércio Med</label></li>
+                        <li><input type="checkbox" id="ter-relatorio-nossa"><label for="ter-relatorio-nossa">Tirar relatório Nossa Senhora</label></li>
+                        <li><input type="checkbox" id="ter-demanda-15"><label for="ter-demanda-15">Conferir demanda de 15 dias</label></li>
+                        <li><input type="checkbox" id="ter-faltas-dia"><label for="ter-faltas-dia">Verificar faltas</label></li>
+                    </ul>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-terca"></div></div>
+                <div class="progress-text" id="progress-text-terca">0% concluído</div>
+                <button class="reset-btn" onclick="resetDay('terca')">Resetar Dia</button>
+            </div>
+
+            <!-- Quarta-feira -->
+            <div id="quarta" class="day-section">
+                <div class="section labs">
+                    <h3>Laboratórios - Quarta-feira</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="qua-eurofarma"><label for="qua-eurofarma">Eurofarma</label></li>
+                        <li><input type="checkbox" id="qua-prati"><label for="qua-prati">Prati</label></li>
+                    </ul>
+                </div>
+                <div class="section daily-tasks">
+                    <h3>Tarefas Diárias</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="qua-relatorio-maria"><label for="qua-relatorio-maria">Tirar relatório Maria Comércio Med</label></li>
+                        <li><input type="checkbox" id="qua-relatorio-nossa"><label for="qua-relatorio-nossa">Tirar relatório Nossa Senhora</label></li>
+                        <li><input type="checkbox" id="qua-demanda-15"><label for="qua-demanda-15">Conferir demanda de 15 dias</label></li>
+                        <li><input type="checkbox" id="qua-faltas-dia"><label for="qua-faltas-dia">Verificar faltas</label></li>
+                    </ul>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-quarta"></div></div>
+                <div class="progress-text" id="progress-text-quarta">0% concluído</div>
+                <button class="reset-btn" onclick="resetDay('quarta')">Resetar Dia</button>
+            </div>
+
+            <!-- Quinta-feira -->
+            <div id="quinta" class="day-section">
+                <div class="section labs">
+                    <h3>Laboratórios - Quinta-feira</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="qui-teuto"><label for="qui-teuto">Teuto</label></li>
+                        <li><input type="checkbox" id="qui-similares"><label for="qui-similares">Similares</label></li>
+                    </ul>
+                </div>
+                <div class="section daily-tasks">
+                    <h3>Tarefas Diárias</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="qui-relatorio-maria"><label for="qui-relatorio-maria">Tirar relatório Maria Comércio Med</label></li>
+                        <li><input type="checkbox" id="qui-relatorio-nossa"><label for="qui-relatorio-nossa">Tirar relatório Nossa Senhora</label></li>
+                        <li><input type="checkbox" id="qui-demanda-15"><label for="qui-demanda-15">Conferir demanda de 15 dias</label></li>
+                        <li><input type="checkbox" id="qui-faltas-dia"><label for="qui-faltas-dia">Verificar faltas</label></li>
+                    </ul>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-quinta"></div></div>
+                <div class="progress-text" id="progress-text-quinta">0% concluído</div>
+                <button class="reset-btn" onclick="resetDay('quinta')">Resetar Dia</button>
+            </div>
+
+            <!-- Sexta-feira -->
+            <div id="sexta" class="day-section">
+                <div class="section labs">
+                    <h3>Laboratórios - Sexta-feira</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="sex-uniao-quimica"><label for="sex-uniao-quimica">União Química</label></li>
+                        <li><input type="checkbox" id="sex-biolab"><label for="sex-biolab">Biolab</label></li>
+                    </ul>
+                </div>
+                <div class="section daily-tasks">
+                    <h3>Tarefas Diárias</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="sex-relatorio-maria"><label for="sex-relatorio-maria">Tirar relatório Maria Comércio Med</label></li>
+                        <li><input type="checkbox" id="sex-relatorio-nossa"><label for="sex-relatorio-nossa">Tirar relatório Nossa Senhora</label></li>
+                        <li><input type="checkbox" id="sex-demanda-15"><label for="sex-demanda-15">Conferir demanda de 15 dias</label></li>
+                        <li><input type="checkbox" id="sex-faltas-dia"><label for="sex-faltas-dia">Verificar faltas</label></li>
+                    </ul>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-sexta"></div></div>
+                <div class="progress-text" id="progress-text-sexta">0% concluído</div>
+                <button class="reset-btn" onclick="resetDay('sexta')">Resetar Dia</button>
+            </div>
+
+            <!-- Tarefas Mensais -->
+            <div id="mensal" class="monthly-section">
+                <div class="section monthly">
+                    <h3>Tarefas Mensais - Todo Início do Mês</h3>
+                    <ul class="checklist">
+                        <li><input type="checkbox" id="men-relatorio-vendedoras"><label for="men-relatorio-vendedoras">Tirar relatórios vendedoras</label></li>
+                        <li><input type="checkbox" id="men-relatorio-lucratividade"><label for="men-relatorio-lucratividade">Tirar relatórios lucratividade</label></li>
+                        <li><input type="checkbox" id="men-relatorio-contabilidade"><label for="men-relatorio-contabilidade">Tirar relatórios contabilidade</label></li>
+                    </ul>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-mensal"></div></div>
+                <div class="progress-text" id="progress-text-mensal">0% concluído</div>
+                <button class="reset-btn" onclick="resetDay('mensal')">Resetar Mês</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para mostrar a aba selecionada
+        function showTab(day) {
+            // Esconder todas as seções
+            document.querySelectorAll('.day-section, .monthly-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remover classe active de todas as abas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar seção selecionada
+            document.getElementById(day).classList.add('active');
+            
+            // Adicionar classe active na aba clicada
+            event.target.classList.add('active');
+            
+            // Atualizar progresso da aba ativa
+            updateProgress(day);
+        }
+
+        // Função para atualizar o progresso
+        function updateProgress(day) {
+            const checkboxes = document.querySelectorAll(`#${day} input[type="checkbox"]`);
+            const checkedBoxes = document.querySelectorAll(`#${day} input[type="checkbox"]:checked`);
+            
+            const total = checkboxes.length;
+            const completed = checkedBoxes.length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            const progressBar = document.getElementById(`progress-${day}`);
+            const progressText = document.getElementById(`progress-text-${day}`);
+            
+            if (progressBar && progressText) {
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `${percentage}% concluído (${completed}/${total})`;
+            }
+        }
+
+        // Função para resetar um dia
+        function resetDay(day) {
+            if (confirm('Tem certeza que deseja resetar todas as tarefas deste período?')) {
+                const checkboxes = document.querySelectorAll(`#${day} input[type="checkbox"]`);
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateProgress(day);
+                saveProgress();
+            }
+        }
+
+        // Função para salvar o progresso
+        function saveProgress() {
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progress = {};
+            
+            allCheckboxes.forEach(checkbox => {
+                progress[checkbox.id] = checkbox.checked;
+            });
+            
+            // Salva no localStorage (simulado)
+            try {
+                const progressData = JSON.stringify(progress);
+                // Em um ambiente real, você salvaria no localStorage
+                // localStorage.setItem('farmacia-rotina', progressData);
+            } catch (e) {
+                console.log('Dados salvos em memória');
+            }
+        }
+
+        // Função para carregar o progresso salvo
+        function loadProgress() {
+            try {
+                // Em um ambiente real, você carregaria do localStorage
+                // const saved = localStorage.getItem('farmacia-rotina');
+                // if (saved) {
+                //     const progress = JSON.parse(saved);
+                //     Object.keys(progress).forEach(id => {
+                //         const checkbox = document.getElementById(id);
+                //         if (checkbox) {
+                //             checkbox.checked = progress[id];
+                //         }
+                //     });
+                // }
+            } catch (e) {
+                console.log('Carregando dados da sessão');
+            }
+        }
+
+        // Adicionar event listeners para todos os checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // Encontrar qual dia/seção pertence
+                    const section = this.closest('.day-section, .monthly-section');
+                    if (section) {
+                        const day = section.id;
+                        updateProgress(day);
+                        saveProgress();
+                    }
+                });
+            });
+            
+            // Carregar progresso salvo
+            loadProgress();
+            
+            // Atualizar progresso inicial
+            updateProgress('segunda');
+        });
+    </script>
+</body>
+</html>
